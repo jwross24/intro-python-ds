@@ -1,6 +1,6 @@
-#%%
-# Example, do not modify!
+# %%
+# Division
 print(5 / 8)
 
-# Put code below here
+# Addition
 print(7 + 10)
