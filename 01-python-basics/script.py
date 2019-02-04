@@ -18,3 +18,47 @@ print(4 ** 2)
 
 # How much is your $100 worth after 7 years?
 print(100 * 1.1 ** 7)
+
+# %%
+# Create a variable savings
+savings = 100
+
+# Create a variable growth_multiplier
+growth_multiplier = 1.1
+
+# Calculate result
+result = savings * growth_multiplier ** 7
+
+# Print out result
+print(result)
+
+# %%
+# Create a variable desc
+desc = 'compound interest'
+
+# Create a variable profitable
+profitable = True
+
+# %%
+# Assign product of growth_multiplier and savings to year1
+year1 = savings * growth_multiplier
+
+# Print the type of year1
+print(type(year1))
+
+# Assign sum of desc and desc to doubledesc
+doubledesc = desc + desc
+
+# Print out doubledesc
+print(doubledesc)
+
+# %%
+# Fix the printout
+print("I started with $" + str(savings) + " and now have $" + str(result) +
+      ". Awesome!")
+
+# Definition of pi_string
+pi_string = "3.1415926"
+
+# Convert pi_string into float: pi_float
+pi_float = float(pi_string)
