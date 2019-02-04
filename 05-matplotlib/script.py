@@ -2,6 +2,9 @@
 # Import matplotlib.pyplot as plt
 import matplotlib.pyplot as plt
 
+# Import numpy as np
+import numpy as np
+
 year = range(1950, 2101)
 pop = [2.53, 2.57, 2.62, 2.67, 2.71, 2.76, 2.81, 2.86, 2.92, 2.97, 3.03, 3.08,
        3.14, 3.2, 3.26, 3.33, 3.4, 3.47, 3.54, 3.62, 3.69, 3.77, 3.84, 3.92,
@@ -184,3 +187,104 @@ plt.hist(life_exp1950, 15)
 # Show and clear plot again
 plt.show()
 plt.clf()
+
+# %%
+# Basic scatter plot, log scale
+plt.scatter(gdp_cap, life_exp)
+plt.xscale('log')
+
+# Strings
+xlab = 'GDP per Capita [in USD]'
+ylab = 'Life Expectancy [in years]'
+title = 'World Development in 2007'
+
+# Add axis labels
+plt.xlabel(xlab)
+plt.ylabel(ylab)
+
+# Add title
+plt.title(title)
+
+# After customizing, display the plot
+plt.show()
+
+# %%
+# Scatter plot
+plt.scatter(gdp_cap, life_exp)
+
+# Previous customizations
+plt.xscale('log')
+plt.xlabel('GDP per Capita [in USD]')
+plt.ylabel('Life Expectancy [in years]')
+plt.title('World Development in 2007')
+
+# Definition of tick_val and tick_lab
+tick_val = [1000, 10000, 100000]
+tick_lab = ['1k', '10k', '100k']
+
+# Adapt the ticks on the x-axis
+plt.xticks(tick_val, tick_lab)
+
+# After customizing, display the plot
+plt.show()
+
+# %%
+
+# Store pop as a numpy array: np_pop
+np_pop = np.array(pop)
+
+# Double np_pop
+np_pop = np_pop * 2
+
+# Update: set s argument to np_pop
+plt.scatter(gdp_cap, life_exp, s=np_pop)
+
+# Previous customizations
+plt.xscale('log')
+plt.xlabel('GDP per Capita [in USD]')
+plt.ylabel('Life Expectancy [in years]')
+plt.title('World Development in 2007')
+plt.xticks([1000, 10000, 100000], ['1k', '10k', '100k'])
+
+# Display the plot
+plt.show()
+
+# %%
+col = ['red', 'green', 'blue', 'blue', 'yellow', 'black', 'green', 'red',
+       'red', 'green', 'blue', 'yellow', 'green', 'blue', 'yellow', 'green',
+       'blue', 'blue', 'red', 'blue', 'yellow', 'blue', 'blue', 'yellow',
+       'red', 'yellow', 'blue', 'blue', 'blue', 'yellow', 'blue', 'green',
+       'yellow', 'green', 'green', 'blue', 'yellow', 'yellow', 'blue',
+       'yellow', 'blue', 'blue', 'blue', 'green', 'green', 'blue', 'blue',
+       'green', 'blue', 'green', 'yellow', 'blue', 'blue', 'yellow',
+       'yellow', 'red', 'green', 'green', 'red', 'red', 'red', 'red', 'green',
+       'red', 'green', 'yellow', 'red', 'red', 'blue', 'red', 'red', 'red',
+       'red', 'blue', 'blue', 'blue', 'blue', 'blue', 'red', 'blue', 'blue',
+       'blue', 'yellow', 'red', 'green', 'blue', 'blue', 'red', 'blue', 'red',
+       'green', 'black', 'yellow', 'blue', 'blue', 'green', 'red', 'red',
+       'yellow', 'yellow', 'yellow', 'red', 'green', 'green', 'yellow', 'blue',
+       'green', 'blue', 'blue', 'red', 'blue', 'green', 'blue', 'red', 'green',
+       'green', 'blue', 'blue', 'green', 'red', 'blue', 'blue', 'green',
+       'green', 'red', 'red', 'blue', 'red', 'blue', 'yellow', 'blue', 'green',
+       'blue', 'green', 'yellow', 'yellow', 'yellow', 'red', 'red', 'red',
+       'blue', 'blue']
+
+# Specify c and alpha inside plt.scatter()
+plt.scatter(x=gdp_cap, y=life_exp, s=np.array(pop) * 2, c=col, alpha=0.8)
+
+# Previous customizations
+plt.xscale('log')
+plt.xlabel('GDP per Capita [in USD]')
+plt.ylabel('Life Expectancy [in years]')
+plt.title('World Development in 2007')
+plt.xticks([1000, 10000, 100000], ['1k', '10k', '100k'])
+
+# Additional customizations
+plt.text(1550, 71, 'India')
+plt.text(5700, 80, 'China')
+
+# Add grid() call
+plt.grid(True)
+
+# Show the plot
+plt.show()
