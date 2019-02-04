@@ -33,3 +33,20 @@ print(house)
 
 # Print out the type of house
 print(type(house))
+
+# %%
+# Print out second element from areas
+print(areas[1])
+
+# Print out last element from areas
+print(areas[-1])
+
+# Print out the area of the living room
+print(areas[5])
+
+# %%
+# Sum of kitchen and bedroom area: eat_sleep_area
+eat_sleep_area = areas[3] + areas[-3]
+
+# Print the variable eat_sleep_area
+print(eat_sleep_area)
