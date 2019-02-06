@@ -1,89 +1,64 @@
-import os
-import re
+import numpy as np
+import operator
 import tweepy
+import datetime as DT
 from textblob import TextBlob
 
 
-class TwitterClient(object):
-    '''
-    Generic Twitter Class for the App
-    '''
-    def __init__(self, query, retweets_only=False, with_sentiment=False):
-        # Keys and tokens from the Twitter Dev Console
-        consumer_key = os.environ['CONSUMER_KEY']
-        consumer_secret = os.environ['CONSUMER_SECRET']
-        access_token = os.environ['ACCESS_TOKEN']
-        access_token_secret = os.environ['ACCESS_TOKEN_SECRET']
+# Step 1 - Authenticate
+consumer_key = 'CONSUMER_KEY_HERE'
+consumer_secret = 'CONSUMER_SECRET_HERE'
 
-        # Attempt authentication
-        try:
-            self.auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-            self.auth.set_access_token(access_token, access_token_secret)
-            self.query = query
-            self.retweets_only = retweets_only
-            self.with_sentiment = with_sentiment
-            self.api = tweepy.API(self.auth)
-            self.tweet_count_max = 100  # To prevent rate limiting
-        except Exception:
-            print('Error: Authentication Failed')
-            raise
+access_token = 'ACCESS_TOKEN_HERE'
+access_token_secret = 'ACCESS_TOKEN_SECRET_HERE'
 
-    # Set the query to search for on Twitter
-    def set_query(self, query=''):
-        self.query = query
+auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+auth.set_access_token(access_token, access_token_secret)
 
-    # Set if we should count Retweets or not
-    def set_retweet_checking(self, retweets_only='false'):
-        self.retweets_only = retweets_only
+api = tweepy.API(auth)
 
-    # Set if we should record the sentiment of a Tweet or not
-    def set_with_sentiment(self, with_sentiment='false'):
-        self.with_sentiment = with_sentiment
+# Step 2 - Prepare query features
 
-    # Clean the tweet according to the regex rule
-    def clean_tweet(self, tweet):
-        rule = '(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)'
-        return ' '.join(re.sub(rule, ' ', tweet).split())
+# List of bootcamps with 
+bootcamps = ['Sarkozy', 'Kosciusko', 'Cope', 'Juppe', 'Fillon', 'Le Maire',
+             'Poisson']
+# Set default until_date to today, since_date to a week before
+until_date = DT.date().today()
+since_date = until_date - DT.timedelta(days=7)
 
-    # Get the overall sentiment of the tweet
-    def get_tweet_sentiment(self, tweet):
-        analysis = TextBlob(self.clean_tweet(tweet))
-        if analysis.sentiment.polarity > 0:
-            return 'positive'
-        elif analysis.sentiment.polarity == 0:
-            return 'neutral'
-        else:
-            return 'negative'
 
-    # Search Twitter for the Tweets to find the sentiment of
-    def get_tweets(self):
-        tweets = []
+# Step 2b - Label the sentiments
+def get_label(analysis, threshold=0):
+    if analysis.sentiment[0] > threshold:
+        return 'Positive'
+    elif analysis.sentiment[0] == threshold:
+        return 'Neutral'
+    else:
+        return 'Negative'
 
-        try:
-            recd_tweets = self.api.search(q=self.query,
-                                          count=self.tweet_count_max)
-            if not recd_tweets:
-                pass
-            for tweet in recd_tweets:
-                parsed_tweet = {}
-                ttext = tweet.text
 
-                parsed_tweet['text'] = ttext
-                parsed_tweet['user'] = tweet.user.screen_name
+# Step 3 - retrieve Tweets and save them
+all_polarities = {}
+for bootcamp in bootcamps:
+    this_bootcamp_polarity = []
+    # Get tweets about the bootcamp between the dates
+    this_bootcamp_tweets = api.search(q=bootcamp, count=100, since=since_date,
+                                      until=until_date)
+    # Save the Tweets in a CSV
+    with open('%s_tweets.csv' % bootcamp, 'wb') as this_bootcamp_file:
+        this_bootcamp_file.write('tweet,sentiment_label\n')
+        for tweet in this_bootcamp_tweets:
+            analysis = TextBlob(tweet.text)
+            # Get the label corresponding to the sentiment
+            this_bootcamp_polarity.append(analysis.sentiment[0])
+            this_bootcamp_file.write('%s,%s\n' % (tweet.text.encode('utf8'),
+                                                  get_label(analysis)))
+    # Save the mean for final results
+    all_polarities[bootcamp] = np.mean(this_bootcamp_polarity)
 
-                if self.with_sentiment == 1:
-                    parsed_tweet['sentiment'] = self.get_tweet_sentiment(ttext)
-                else:
-                    parsed_tweet['sentiment'] = 'unavailable'
-
-                if tweet.retweet_count > 0 and self.retweets_only == 1:
-                    if parsed_tweet not in tweets:
-                        tweets.append(parsed_tweet)
-                elif not self.retweets_only:
-                    if parsed_tweet not in tweets:
-                        tweets.append(parsed_tweet)
-
-            return tweets
-
-        except tweepy.TweepError as e:
-            print('Error : ' + str(e))
+# Step bonus - Print a Result
+sorted_analysis = sorted(all_polarities.items(), key=operator.itemgetter(1),
+                         reverse=True)
+print('Mean Sentiment Polarity in descending order :')
+for candidate, polarity in sorted_analysis:
+    print('%s : %0.3f' % (candidate, polarity))
