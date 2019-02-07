@@ -20,7 +20,7 @@ try:
     auth.set_access_token(access_token, access_token_secret)
     api = tweepy.API(auth, wait_on_rate_limit=True,
                      wait_on_rate_limit_notify=True)
-    tweet_count_max = 45  # to prevent rate limiting
+    tweet_count_max = 200
 except Exception:
     print('Error: authentication failed')
     raise
